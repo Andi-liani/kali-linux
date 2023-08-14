@@ -1,0 +1,128 @@
+Repositori Jaringan Kali (/etc/apt/sources.list)
+
+Topik repositori selalu besar, dan sering muncul. Ini adalah item yang sering membuat orang salah dan bingung. Harap luangkan waktu untuk membaca informasi di bawah ini dan referensi apa pun yang terkait sebelum bertindak atas apa pun.
+Nilai Repositori Jaringan Default
+
+Pada instalasi Kali Linux yang standar dan bersih, dengan akses jaringan, Anda harus memiliki entri berikut /etc/apt/sources.list:
+
+kali@kali:~$ grep -v '#' /etc/apt/sources.list | sort -u
+deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
+
+kali@kali:~$
+
+Jika keluaran tidak sama persis dengan keluaran di atas, Anda mungkin tidak dapat menginstal paket tambahan baru atau menerima pembaruan. Ini dapat terjadi karena sejumlah alasan, seperti:
+
+    Anda telah beralih cabang Anda .
+    Menggunakan mirror hardcoded yang berbeda . 
+
+Anda mungkin ingin membaca bagian "beralih cabang" untuk mengubahnya.
+
+Sejak Kali 2020.3 , setelah pengaturan Kali selesai, repositori jaringan akan diaktifkan secara default, meskipun tidak ada akses jaringan selama instalasi.
+Mengalihkan Cabang Utama Kali
+
+Kali memiliki dua cabang utama untuk dipilih (silakan luangkan waktu untuk membaca mana yang akan menjadi pilihan terbaik untuk pengaturan Anda):
+
+    kali-rolling - default & sering diperbarui
+    kali-last-snapshot - rilis titik jadi lebih "stabil" & "paling aman" 
+
+Mengaktifkan kali-rollingcabang dilakukan dengan perintah:
+
+kali@kali:~$ echo "deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list
+
+Mengaktifkan kali-last-snapshotcabang dilakukan dengan perintah:
+
+kali@kali:~$ echo "deb http://http.kali.org/kali kali-last-snapshot main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list
+
+Perhatikan bahwa perubahan seperti itu hanya efektif setelah dijalankan sudo apt update.
+Mengaktifkan Cabang Tambahan Kali
+
+Kali juga mengusulkan cabang tambahan untuk kasus khusus. Secara teori, dimungkinkan untuk mengaktifkannya terlepas dari cabang utama yang Anda gunakan. Namun dalam praktiknya, mereka dimaksudkan untuk digunakan sebagai tambahan kali-rolling. Kami tidak menyarankan menggunakannya sebagai tambahan kali-last-snapshotkecuali Anda tahu persis apa yang Anda lakukan. Cabang tambahan tersebut adalah:
+
+    kali-experimental - paket yang sedang diuji atau sedang dikerjakan
+    kali-bleeding-edge - paket diperbarui secara otomatis dari repositori git upstream 
+
+Mengaktifkan atau menonaktifkan cabang tersebut paling baik dilakukan dengan menggunakan alat baris perintah kali-tweaks, di bagian Repositori Jaringan :
+
+Jika mau, Anda juga dapat mengaktifkan cabang tersebut secara manual dari baris perintah. Misalnya mengaktifkan kali-experimentaldilakukan dengan perintah:
+
+kali@kali:~$ echo "deb http://http.kali.org/kali kali-experimental main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list.d/kali-experimental.list
+
+Perhatikan bahwa dalam perintah di atas, kami tidak mengubah file /etc/apt/sources.list, tetapi sebaliknya kami membuat file baru /etc/apt/sources.list.d/kali-experimental.list. Ini adalah konvensi: file /etc/apt/sources.listseharusnya hanya berisi cabang utama, sedangkan cabang tambahan harus masuk /etc/apt/sources.list.d/, satu cabang per file.
+
+Jika Anda mengikuti konvensi ini, maka nonaktifkan kali-experimentalcabang langsung:
+
+kali@kali:~$ sudo rm /etc/apt/sources.list.d/kali-experimental.list
+
+Cabang kali-bleeding-edgedapat diaktifkan dengan perintah serupa, kita hanya perlu mengubah nama cabang:
+
+kali@kali:~$ echo "deb http://http.kali.org/kali kali-bleeding-edge main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list.d/kali-bleeding-edge.list
+
+Untuk menonaktifkan kali-bleeding-edge:
+
+kali@kali:~$ sudo rm /etc/apt/sources.list.d/kali-bleeding-edge.list
+
+Sumber.daftar Format
+
+deb   http://http.kali.org/kali   kali-rolling   main contrib non-free non-free-firmware
+<Archive>   <Mirror>                <Branch>                <Components>
+
+    Arsip akan menjadi deb(Biner Reguler) atau deb-src(Sumber), tergantung apakah Anda menginginkan paket atau sumber paket.
+    Cermin seharusnya http://http.kali.org/kalikarena ini adalah load balancer kami, yang akan mengarahkan Anda ke mirror terbaik .
+    Branch adalah versi Kali yang ingin Anda gunakan.
+    Komponen adalah paket yang ingin Anda gunakan, berdasarkan Panduan Perangkat Lunak Bebas Debian (DFSG) . Kali default untuk semuanya. 
+
+Nilai Instal Offline Default
+
+Selama proses setup Kali, jika Anda tidak memiliki akses ke koneksi jaringan untuk mencapai repositori, Anda akan melakukan instalasi offline Kali Linux. Anda akan dibatasi pada paket & versi yang ada di media tempat Anda menginstal Kali. Ini kemudian akan mengonfigurasi Kali untuk terus menggunakan media ini untuk menginstal paket, bahkan setelah Kali diinstal.
+
+Ini berarti Anda tidak akan mendapatkan pembaruan apa pun untuk paket, atau alat tambahan baru apa pun, yang dapat membuat frustrasi. Anda dapat melihat apakah Anda mengaktifkan media offline jika nilai Anda cocok dengan yang ada di bawah (atau jika Anda ingin mengaktifkan opsi ini):
+
+kali@kali:~$ cat /etc/apt/sources.list
+#
+
+# deb cdrom:[Kali GNU/Linux 2020.1a _Kali-last-snapshot_ - Official amd64 DVD Binary-1 with firmware 20200213-14:56]/ kali-rolling main non-free
+
+#deb cdrom:[Kali GNU/Linux 2020.1a _Kali-last-snapshot_ - Official amd64 DVD Binary-1 with firmware 20200213-14:56]/ kali-rolling main non-free
+
+# This system was installed using small removable media
+# (e.g. netinst, live or single CD). The matching "deb cdrom"
+# entries were disabled at the end of the installation process.
+# For information about how to configure apt package sources,
+# see the sources.list(5) manual.
+kali@kali:~$
+kali@kali:~$ sudo apt-cdrom add
+Using CD-ROM mount point /media/cdrom/
+Identifying... [ea19ff4bedaa6c8f4662c0e8c58ed44c-2]
+Scanning disc for index files...
+Found 2 package indexes, 0 source indexes, 0 translation indexes and 0 signatures
+This disc is called:
+'Kali GNU/Linux 2020.1a _Kali-last-snapshot_ - Official amd64 DVD Binary-1 with firmware 20200213-14:56'
+Reading Package Indexes... Done
+Writing new source list
+Source list entries for this disc are:
+deb cdrom:[Kali GNU/Linux 2020.1a _Kali-last-snapshot_ - Official amd64 DVD Binary-1 with firmware 20200213-14:56]/ kali-rolling main non-free
+Repeat this process for the rest of the CDs in your set.
+kali@kali:~$
+
+Jika keluaran Anda cocok dengan yang di atas, harap lihat bagian peralihan cabang, jika Anda ingin menerima pembaruan.
+
+Namun, jika Anda memiliki koneksi jaringan, yang memiliki akses ke repositori jaringan, itu akan diaktifkan untuk Anda. Anda tidak perlu melakukan apapun.
+Repositori Non-Kali
+
+Jika Anda ingin menginstal alat dan perangkat lunak tambahan (seperti signal ) di luar apa yang ditawarkan Kali, Anda mungkin perlu menyertakan repositori tambahan agar hal ini terjadi. Tolong jangan diubah /etc/apt/sources.list, karena ini digunakan untuk Sistem Operasi Kali Linux. Alat dan perangkat lunak tambahan apa pun harus ditempatkan ke dalam file mereka sendiri di direktori /etc/apt/sources.list.d/(seperti /etc/apt/sources.list.d/repo-name.list, mengganti repo-namedengan nama cermin). Sangat disarankan agar setiap mirror harus berada dalam filenya sendiri.
+
+Dengan menambahkan repositori Kali ke OS non-Kali (seperti mencoba menambahkan Kali ke Ubuntu), ini akan sangat meningkatkan kemungkinan sistem Anda tidak berfungsi. Ini mungkin tidak langsung terjadi, tetapi tanpa peringatan apa pun, itu bisa rusak. Kami tidak akan dapat menawarkan dukungan (dan berdasarkan apa yang telah kami lihat selama bertahun-tahun, sebagian besar OS lain juga tidak akan membantu).
+
+Demikian pula, menambahkan repositori sistem operasi lain ke Kali (seperti mencoba meletakkan Ubuntu di Kali), akan merusak instalasi Anda. Ini adalah satu-satunya alasan paling umum mengapa sistem Kali Linux rusak.
+
+Jika ada panduan yang memberitahu Anda untuk melakukan hal lain selain di atas, ini adalah saran tidak resmi, dan sama sekali tidak didukung oleh Kali Linux. Lebih sering daripada tidak, pengguna dalam hal ini akhirnya melakukan penginstalan ulang setelah mempelajari pelajaran ini.
+Cermin
+
+Kami memiliki daftar mirror Kali Linux resmi , serta panduan tentang cara mengaturnya sendiri . Ini dapat disimpan sebagai repositori lokal yang hanya dapat diakses di LAN, atau pribadi jarak jauh, atau jika Anda memiliki kemampuan, Anda mungkin ingin membagikannya kembali ke komunitas dan menjadikannya publik yang memungkinkan orang lain di wilayah geografis Anda. daerah untuk mendapatkan keuntungan darinya.
+Repositori Sumber
+
+Dengan menggunakan a debdi repositori, itu akan memungkinkan paket biner untuk diunduh. Namun, jika Anda memerlukan sumber untuk sebuah paket (sehingga Anda dapat mengkompilasi sendiri paket tersebut jika Anda menginginkannya, atau mencari masalah debug pada sebuah paket), Anda dapat menambahkan deb-srcsebagai baris tambahan di repositori:
+
+kali@kali:~$ echo "deb-src http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" | sudo tee -a /etc/apt/sources.list
+
+Kami menggunakan kali-rollinguntuk cabang di atas, tetapi Anda dapat memilih nilai apa pun yang diinginkan. 
